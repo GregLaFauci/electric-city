@@ -17,8 +17,8 @@ CITY_VIEW = pdk.ViewState(
 ONE_WTC = [
     {
         "name": "One World Trade Center",
-        "position": [-74.0133, 40.7127],
-        "height": 541.3,
+        "position": [-74.0133, 40.7127, 429.27],
+        "height": 112.03,
         "height_feet": 1776,
         "bin": "1088469",
         "construction_year": "2009",
@@ -74,7 +74,7 @@ def build_deck(
             pickable=True,
             auto_highlight=True,
             disk_resolution=6,
-            radius=6,
+            radius=3,
             extruded=True,
             get_position="position",
             get_elevation="height",
