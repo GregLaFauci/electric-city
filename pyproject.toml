@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "electric-boroughs"
+name = "electric-city"
 version = "1.0.0"
-description = "A Python-powered 3D portrait of all five New York City boroughs."
+description = "A Python-powered 3D night drive through every Manhattan building."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [

@@ -1,35 +1,29 @@
-# Electric Boroughs
+# Electric City
 
-**A Python-powered 3D portrait of all five New York City boroughs.**
+**City of Dreams — every Manhattan building rendered as a 1990s night drive.**
 
-Electric Boroughs turns public building footprints and real roof heights into
-an explorable city of light. Manhattan, The Bronx, Brooklyn, Queens, and Staten
-Island each receive a distinct color; glowing arcs make the five-borough system
-visible as one connected metropolis.
+Electric City turns 45,059 public building footprints and recorded roof heights
+into an explorable synthwave Manhattan. Low-rise blocks glow cyan, mid-rise
+buildings shift through violet, towers burn magenta, and the tallest landmarks
+catch the orange horizon.
 
-![Electric Boroughs overview](readme-resources/img/overview.png)
+![Electric City overview](readme-resources/img/overview.png)
 
-## Why this exists
+## The idea
 
-The official [NYC 3-D Building Model][3d-model] represents every building
-present in the 2014 aerial survey. It is an extraordinary CityGML source, but
-the 894 MB download expands to many gigabytes and is not ideal for a quick web
-demo. This project pairs that source with NYC OTI's actively maintained
-[Building Footprints][footprints] dataset. The footprint API supplies geometry,
-roof height, construction year, and borough-coded BIN values in browser-ready
-GeoJSON.
+The inspiration is the feeling of a 1990s arcade racer at midnight: an endless
+city ahead, neon lanes pulling toward the horizon, and Manhattan rising out of
+the dark. The spectacle is data-driven. Every visible building is a real NYC
+footprint, and every extrusion uses its public `height_roof` value.
 
-The luminous ground plane is also public data: NYC Planning's current
-[Borough Boundaries][boundaries] release. This keeps the city readable when a
-basemap tile is unavailable and makes the five-borough premise explicit.
+The official [NYC 3-D Building Model][3d-model] represents every building in
+the 2014 aerial survey as CityGML. Its 894 MB archive expands to many gigabytes,
+so Electric City uses NYC OTI's actively maintained [Building Footprints][footprints]
+API for a lighter, browser-ready rendering of the complete Manhattan subset.
+The island silhouette comes from NYC Planning's current [Borough Boundaries][boundaries]
+release.
 
-The committed showcase balances the 100 tallest structures with 400 context
-buildings from each borough—not a claim that those 2,500 records are the entire
-city. The equal sampling is intentional: Staten Island and The Bronx deserve
-visual weight alongside Manhattan. Re-run the pipeline with any sample size,
-or adapt the loader to process all one-million-plus footprints in tiles.
-
-## Run it
+## Run the interactive studio
 
 ```bash
 python -m venv .venv
@@ -38,30 +32,32 @@ pip install -e '.[dev]'
 streamlit run app.py
 ```
 
-Then orbit, zoom, filter boroughs, and change the vertical exaggeration from
-the sidebar.
+Drag to orbit, scroll to travel through the island, hover to inspect a building,
+adjust the skyline boost, and switch the Rad Racer light trails on or off.
 
-## Rebuild from public data
+## Rebuild from NYC Open Data
 
 ```bash
-python scripts/fetch_data.py --per-borough 100 --context-per-borough 400
+python scripts/fetch_manhattan.py
 python scripts/build_demo.py
 pytest
 ```
 
-The first command issues one transparent Socrata query per borough. Query
-construction, height conversion, borough colors, and filtering live in
-`src/nyc_skyline/`; the generated, serverless PyDeck experience is written to
-`docs/index.html` for GitHub Pages.
+The downloader works in 1,000-record pages with bounded concurrency because a
+single 45,000-feature request overwhelms the public Socrata endpoint. The build
+step validates heights, converts feet to meters, assigns the height-driven neon
+palette, and writes a serverless PyDeck experience to `docs/` for GitHub Pages.
 
-## Data notes
+## Honest data notes
 
-- Source agency: NYC Office of Technology and Innovation (OTI)
-- Geometry: building footprint polygons, WGS84 GeoJSON from the Socrata API
-- Height: `height_roof`, feet above ground, converted to meters for Deck.gl
-- Borough: first digit of the seven-digit Building Identification Number (BIN)
+- Scope: 45,059 Manhattan footprints returned during the current refresh
+- Geometry: WGS84 GeoJSON polygons from NYC OTI
+- Height: `height_roof` in feet, converted to meters for Deck.gl
+- Validation: records above 2,000 feet are excluded as impossible source anomalies
+- Color: an artistic height classification, not a statistical category
+- Trails: art-directed paths inspired by Manhattan's major north–south routes
 - Original 3D capture: 2014 aerial survey, hybrid CityGML LOD 1/2
-- Footprints: maintained public basemap, updated independently of the historical model
+- Footprints: maintained public basemap, updated separately from the historical model
 
 Public data remains subject to the [NYC Open Data Terms of Use][terms].
 

@@ -104,6 +104,36 @@ def fetch_city(
     }
 
 
+def fetch_manhattan_all(
+    page_size: int = 1_000,
+    max_pages: int = 60,
+    timeout: int = 120,
+) -> dict[str, Any]:
+    """Fetch every plausible-height Manhattan footprint in parallel pages."""
+    borough = BOROUGHS[0]
+    base = context_query_params(borough, page_size)
+    base["$where"] += " AND height_roof < 2000"
+    pages = [{**base, "$offset": page * page_size} for page in range(max_pages)]
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        groups = list(pool.map(lambda params: _fetch(params, timeout), pages))
+
+    features: list[dict[str, Any]] = []
+    for group in groups:
+        if not group:
+            break
+        features.extend(group)
+    return {
+        "type": "FeatureCollection",
+        "features": features,
+        "metadata": {
+            "source": DATASET_PAGE,
+            "api": API_URL,
+            "scope": "All Manhattan records with roof heights between 8 and 2,000 feet",
+            "page_size": page_size,
+        },
+    }
+
+
 def enrich_features(
     collection: dict[str, Any], vertical_exaggeration: float = 1.0
 ) -> dict[str, Any]:
@@ -132,6 +162,19 @@ def enrich_features(
             fill_color=[*borough.color, alpha],
             line_color=[*borough.color, 255],
         )
+        if code == 1:
+            if height_feet >= 700:
+                props["fill_color"] = [255, 174, 74, alpha]
+                props["line_color"] = [255, 77, 166, 255]
+            elif height_feet >= 300:
+                props["fill_color"] = [255, 48, 144, alpha]
+                props["line_color"] = [255, 132, 204, 255]
+            elif height_feet >= 120:
+                props["fill_color"] = [128, 54, 255, alpha]
+                props["line_color"] = [207, 91, 255, 255]
+            else:
+                props["fill_color"] = [0, 224, 255, alpha]
+                props["line_color"] = [63, 243, 255, 255]
         enriched["features"].append({**feature, "properties": props})
     return enriched
 

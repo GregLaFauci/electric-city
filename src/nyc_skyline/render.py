@@ -1,4 +1,4 @@
-"""PyDeck scene composition for Electric Boroughs."""
+"""PyDeck scene composition for Electric City."""
 
 from __future__ import annotations
 
@@ -6,48 +6,49 @@ from typing import Any
 
 import pydeck as pdk
 
-from .data import BOROUGHS
-
 CITY_VIEW = pdk.ViewState(
-    latitude=40.706,
-    longitude=-73.94,
-    zoom=10.45,
-    pitch=44,
-    bearing=-19,
+    latitude=40.754,
+    longitude=-73.982,
+    zoom=11.15,
+    pitch=55,
+    bearing=29,
 )
 
 
-def connection_arcs() -> list[dict[str, Any]]:
-    """Create a five-borough ring plus links to Manhattan."""
-    manhattan = BOROUGHS[0]
-    arcs = []
-    for index, borough in enumerate(BOROUGHS):
-        next_borough = BOROUGHS[(index + 1) % len(BOROUGHS)]
-        arcs.append(
-            {
-                "source": borough.center,
-                "target": next_borough.center,
-                "source_color": [*borough.color, 185],
-                "target_color": [*next_borough.color, 185],
-            }
-        )
-        if borough.code != 1:
-            arcs.append(
-                {
-                    "source": borough.center,
-                    "target": manhattan.center,
-                    "source_color": [*borough.color, 120],
-                    "target_color": [*manhattan.color, 120],
-                }
-            )
-    return arcs
+def dream_trails() -> list[dict[str, Any]]:
+    """Art-directed light trails that frame Manhattan like a night drive."""
+    return [
+        {
+            "path": [
+                [-74.0132, 40.7030], [-74.0150, 40.7165], [-74.0125, 40.7350],
+                [-74.0088, 40.7540], [-74.0048, 40.7740], [-73.9955, 40.7975],
+                [-73.9348, 40.8725],
+            ],
+            "color": [0, 229, 255, 210],
+        },
+        {
+            "path": [
+                [-74.0090, 40.7065], [-73.9985, 40.7285], [-73.9875, 40.7520],
+                [-73.9795, 40.7695], [-73.9690, 40.7915], [-73.9495, 40.8210],
+                [-73.9330, 40.8670],
+            ],
+            "color": [255, 48, 144, 220],
+        },
+        {
+            "path": [
+                [-74.0030, 40.7095], [-73.9735, 40.7360], [-73.9680, 40.7610],
+                [-73.9525, 40.7880], [-73.9345, 40.8350], [-73.9220, 40.8780],
+            ],
+            "color": [255, 174, 74, 190],
+        },
+    ]
 
 
 def build_deck(
-    buildings: dict[str, Any],
+    buildings: Any,
     *,
     boundaries: dict[str, Any] | None = None,
-    show_connections: bool = True,
+    show_trails: bool = True,
     view_state: pdk.ViewState | None = None,
 ) -> pdk.Deck:
     """Compose the interactive 3D city scene."""
@@ -61,10 +62,10 @@ def build_deck(
                 filled=True,
                 stroked=True,
                 pickable=False,
-                opacity=0.22,
+                opacity=0.16,
                 get_fill_color="properties.fill_color",
                 get_line_color="properties.line_color",
-                line_width_min_pixels=1.3,
+                line_width_min_pixels=1.8,
             )
         )
     layers.append(
@@ -76,26 +77,26 @@ def build_deck(
             wireframe=True,
             pickable=True,
             auto_highlight=True,
-            opacity=0.92,
+            opacity=0.9,
             get_elevation="properties.render_height",
             get_fill_color="properties.fill_color",
             get_line_color="properties.line_color",
-            line_width_min_pixels=0.45,
+            line_width_min_pixels=0.35,
         )
     )
-    if show_connections:
+    if show_trails:
         layers.append(
             pdk.Layer(
-                "LineLayer",
-                connection_arcs(),
-                id="borough-connections",
-                get_source_position="source",
-                get_target_position="target",
-                get_source_color="source_color",
-                get_target_color="target_color",
-                get_width=1.5,
-                width_min_pixels=0.8,
-                opacity=0.55,
+                "PathLayer",
+                dream_trails(),
+                id="dream-trails",
+                get_path="path",
+                get_color="color",
+                get_width=8,
+                width_min_pixels=1.4,
+                joint_rounded=True,
+                cap_rounded=True,
+                opacity=0.8,
             )
         )
 
@@ -106,7 +107,7 @@ def build_deck(
         map_style=pdk.map_styles.DARK,
         tooltip={
             "html": (
-                "<b>{borough}</b><br/>"
+                "<b>Electric City</b><br/>"
                 "{height_feet} ft · BIN {bin}<br/>"
                 "Built {construction_year}"
             ),

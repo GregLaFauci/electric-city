@@ -6,3 +6,4 @@ build/
 *.egg-info/
 .streamlit/secrets.toml
 data/buildings.geojson
+data/manhattan_buildings.geojson
