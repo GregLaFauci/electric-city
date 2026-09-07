@@ -33,7 +33,7 @@ streamlit run app.py
 ```
 
 Drag to orbit, scroll to travel through the island, hover to inspect a building,
-adjust the skyline boost, and switch the Rad Racer light trails on or off.
+and adjust the skyline boost.
 
 ## Rebuild from NYC Open Data
 
@@ -55,7 +55,6 @@ palette, and writes a serverless PyDeck experience to `docs/` for GitHub Pages.
 - Height: `height_roof` in feet, converted to meters for Deck.gl
 - Validation: records above 2,000 feet are excluded as impossible source anomalies
 - Color: an artistic height classification, not a statistical category
-- Trails: art-directed paths inspired by Manhattan's major north–south routes
 - Original 3D capture: 2014 aerial survey, hybrid CityGML LOD 1/2
 - Footprints: maintained public basemap, updated separately from the historical model
 

@@ -16,14 +16,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
-    buildings = enrich_features(
-        load_geojson(ROOT / "data" / "manhattan_buildings.geojson"), 1.0
-    )
+    raw_data = ROOT / "data" / "manhattan_buildings.geojson"
+    web_data = ROOT / "docs" / "data" / "manhattan_buildings.geojson"
+    buildings = load_geojson(raw_data if raw_data.exists() else web_data)
+    first_properties = (buildings.get("features") or [{}])[0].get("properties", {})
+    if "render_height" not in first_properties:
+        buildings = enrich_features(buildings, 1.0)
     boundaries = filter_boroughs(
         enrich_boundaries(load_geojson(ROOT / "data" / "borough_boundaries.geojson")),
         ["Manhattan"],
     )
-    web_data = ROOT / "docs" / "data" / "manhattan_buildings.geojson"
     save_geojson(buildings, web_data)
     deck = build_deck("data/manhattan_buildings.geojson", boundaries=boundaries)
     output = ROOT / "docs" / "index.html"

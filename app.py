@@ -44,7 +44,6 @@ st.markdown(
 with st.sidebar:
     st.header("Tune the dream")
     exaggeration = st.slider("Skyline boost", 0.5, 2.5, 1.0, 0.05)
-    trails = st.toggle("Rad Racer light trails", value=True)
     st.caption(
         "Building geometry and roof heights come from NYC OTI's public Building "
         "Footprints dataset. The view includes the complete Manhattan subset with "
@@ -59,7 +58,6 @@ st.pydeck_chart(
     build_deck(
         visible,
         boundaries=visible_boundaries,
-        show_trails=trails,
     ),
     use_container_width=True,
 )
