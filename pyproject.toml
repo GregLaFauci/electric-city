@@ -9,7 +9,6 @@ description = "A Python-powered 3D night drive through every Manhattan building.
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-  "pydeck>=0.9.1,<1",
   "requests>=2.32,<3",
   "streamlit>=1.40,<2",
 ]

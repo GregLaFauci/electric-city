@@ -1,102 +1,82 @@
-"""PyDeck scene composition for Electric City."""
+"""Generate the Electric City ArcGIS SceneLayer experience."""
 
 from __future__ import annotations
 
-from typing import Any
+import json
 
-import pydeck as pdk
-
-CITY_VIEW = pdk.ViewState(
-    latitude=40.754,
-    longitude=-73.982,
-    zoom=11.15,
-    pitch=55,
-    bearing=29,
+SCENE_URL = (
+    "https://services2.arcgis.com/cFEFS0EWrhfDeVw9/arcgis/rest/services/"
+    "showcases_manhattan_buildings/SceneServer"
 )
 
-ONE_WTC = [
-    {
-        "name": "One World Trade Center",
-        "position": [-74.0133, 40.7127, 429.27],
-        "height": 112.03,
-        "height_feet": 1776,
-        "bin": "1088469",
-        "construction_year": "2009",
-        "color": [255, 181, 71, 255],
+HEIGHT_CLASSES = (
+    (0, 120, "Street glow", [0, 224, 255, 0.9]),
+    (120, 300, "City violet", [112, 54, 255, 0.92]),
+    (300, 700, "Dream magenta", [255, 48, 144, 0.94]),
+    (700, 2000, "Skyline gold", [255, 174, 74, 0.98]),
+)
+
+
+def mesh_symbol(color: list[float]) -> dict:
+    return {
+        "type": "mesh-3d",
+        "symbolLayers": [{
+            "type": "fill",
+            "material": {"color": color[:3], "colorMixMode": "replace"},
+            "edges": {"type": "solid", "color": [255, 105, 210, 0.2], "size": 0.35},
+        }],
     }
-]
 
 
-def build_deck(
-    buildings: Any,
-    *,
-    boundaries: dict[str, Any] | None = None,
-    view_state: pdk.ViewState | None = None,
-) -> pdk.Deck:
-    """Compose the interactive 3D city scene."""
-    layers: list[pdk.Layer] = []
-    if boundaries:
-        layers.append(
-            pdk.Layer(
-                "GeoJsonLayer",
-                boundaries,
-                id="borough-foundation",
-                filled=True,
-                stroked=True,
-                pickable=False,
-                opacity=0.16,
-                get_fill_color="properties.fill_color",
-                get_line_color="properties.line_color",
-                line_width_min_pixels=1.8,
-            )
-        )
-    layers.append(
-        pdk.Layer(
-            "GeoJsonLayer",
-            buildings,
-            id="nyc-buildings",
-            extruded=True,
-            wireframe=True,
-            pickable=True,
-            auto_highlight=True,
-            opacity=0.9,
-            get_elevation="properties.render_height",
-            get_fill_color="properties.fill_color",
-            get_line_color="properties.line_color",
-            line_width_min_pixels=0.35,
-        )
+def scene_renderer() -> dict:
+    return {
+        "type": "class-breaks",
+        "field": "HEIGHTROOF",
+        "defaultSymbol": mesh_symbol([36, 16, 64, 0.7]),
+        "classBreakInfos": [
+            {"minValue": low, "maxValue": high, "label": label, "symbol": mesh_symbol(color)}
+            for low, high, label, color in HEIGHT_CLASSES
+        ],
+    }
+
+
+def build_html() -> str:
+    renderer = json.dumps(scene_renderer(), separators=(",", ":"))
+    legend = "".join(
+        f'<span><i style="--swatch:rgb({color[0]},{color[1]},{color[2]})"></i>{label}</span>'
+        for _, _, label, color in HEIGHT_CLASSES
     )
-    layers.append(
-        pdk.Layer(
-            "ColumnLayer",
-            ONE_WTC,
-            id="one-wtc-spire",
-            pickable=True,
-            auto_highlight=True,
-            disk_resolution=6,
-            radius=3,
-            extruded=True,
-            get_position="position",
-            get_elevation="height",
-            get_fill_color="color",
-            elevation_scale=1,
-        )
-    )
-    return pdk.Deck(
-        layers=layers,
-        initial_view_state=view_state or CITY_VIEW,
-        map_provider="carto",
-        map_style=pdk.map_styles.DARK,
-        tooltip={
-            "html": (
-                "<b>Electric City</b><br/>"
-                "{height_feet} ft · BIN {bin}<br/>"
-                "Built {construction_year}"
-            ),
-            "style": {
-                "backgroundColor": "#07111f",
-                "color": "#f6fbff",
-                "fontFamily": "Inter, sans-serif",
-            },
-        },
-    )
+    return f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#030814" />
+<title>Electric City · City of Dreams</title>
+<link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/dark/main.css" />
+<style>
+html,body,#viewDiv{{width:100%;height:100%;margin:0;background:#030814;overflow:hidden}}
+body{{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#f7fbff}}#viewDiv{{position:absolute;inset:0}}
+.brand{{position:fixed;z-index:3;top:28px;left:34px;pointer-events:none;text-shadow:0 3px 24px #030814}}
+.brand p{{margin:0 0 8px;color:#ff3090;font-size:11px;font-weight:850;letter-spacing:.19em}}
+.brand h1{{margin:0;font-size:46px;line-height:.98;letter-spacing:-.06em}}
+.brand em{{display:block;margin-top:10px;color:#b7c7d8;font-size:13px;font-style:normal}}
+.controls{{position:fixed;z-index:4;right:22px;top:22px;display:flex;gap:6px;padding:6px;border:1px solid #273e58;border-radius:12px;background:#07111fda;backdrop-filter:blur(10px)}}
+button{{border:0;border-radius:8px;padding:8px 11px;background:transparent;color:#b7c7d8;font:700 11px Inter,system-ui;letter-spacing:.04em;cursor:pointer}}
+button:hover,button.active{{background:#ff3090;color:white}}
+.legend{{position:fixed;z-index:3;right:22px;bottom:22px;padding:12px 14px;border:1px solid #273e58;border-radius:12px;background:#07111fda;backdrop-filter:blur(10px);font-size:10px;color:#91a6bb}}
+.legend b{{display:block;color:#f7fbff;font-size:11px;letter-spacing:.08em;margin-bottom:7px}}
+.legend span{{display:inline-flex;align-items:center;margin-right:10px}}.legend i{{width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--swatch);box-shadow:0 0 8px var(--swatch)}}
+#loading{{position:fixed;z-index:8;inset:0;display:grid;place-items:center;background:#030814;color:#ff3090;font-size:11px;font-weight:800;letter-spacing:.2em;transition:opacity .7s}}
+.esri-ui-corner{{top:112px}}@media(max-width:700px){{.brand{{top:18px;left:18px}}.brand h1{{font-size:34px}}.controls{{top:auto;bottom:18px;left:18px;right:auto}}.legend{{display:none}}}}
+</style><script src="https://js.arcgis.com/4.33/"></script></head>
+<body><div id="viewDiv"></div><div id="loading">STREAMING MANHATTAN · CITY OF DREAMS</div>
+<header class="brand"><p>MANHATTAN AFTER MIDNIGHT · PYTHON × PUBLIC 3D DATA</p><h1>Electric City</h1><em>City of Dreams. The real skyline, recoded in neon.</em></header>
+<nav class="controls" aria-label="Camera views"><button class="active" data-view="skyline">Skyline</button><button data-view="downtown">Downtown</button><button data-view="midtown">Midtown</button><button data-view="uptown">Uptown</button></nav>
+<aside class="legend"><b>BUILDING HEIGHT</b>{legend}</aside>
+<script>require(["esri/Map","esri/views/SceneView","esri/layers/SceneLayer"],function(EsriMap,SceneView,SceneLayer){{
+const buildings=new SceneLayer({{url:{json.dumps(SCENE_URL)},renderer:{renderer},popupTemplate:{{title:"{{NAME}}",content:[{{type:"fields",fieldInfos:[{{fieldName:"HEIGHTROOF",label:"Roof height (ft)",format:{{places:0,digitSeparator:true}}}},{{fieldName:"CNSTRCT_YR",label:"Construction year",format:{{places:0,digitSeparator:false}}}}]}}]}},outFields:["NAME","HEIGHTROOF","CNSTRCT_YR"]}});
+const map=new EsriMap({{basemap:"dark-gray-vector",ground:"world-elevation",layers:[buildings]}});
+const cameras={{skyline:{{position:{{longitude:-74.047,latitude:40.690,z:1850}},heading:25,tilt:68}},downtown:{{position:{{longitude:-74.027,latitude:40.700,z:720}},heading:28,tilt:72}},midtown:{{position:{{longitude:-74.005,latitude:40.738,z:900}},heading:24,tilt:70}},uptown:{{position:{{longitude:-73.985,latitude:40.785,z:1050}},heading:25,tilt:67}}}};
+const view=new SceneView({{container:"viewDiv",map,qualityProfile:"high",camera:cameras.skyline,environment:{{background:{{type:"color",color:[3,8,20,1]}},starsEnabled:true,atmosphereEnabled:true,lighting:{{type:"virtual",directShadowsEnabled:true,ambientOcclusionEnabled:true}}}},highlightOptions:{{color:[255,174,74],fillOpacity:.35,haloOpacity:.9}}}});
+view.ui.move("zoom","bottom-left");view.whenLayerView(buildings).then(layerView=>{{const done=()=>{{if(!layerView.updating){{document.getElementById("loading").style.opacity="0";setTimeout(()=>document.getElementById("loading")?.remove(),750)}}}};layerView.watch("updating",done);done();}});
+document.querySelectorAll("[data-view]").forEach(button=>button.addEventListener("click",()=>{{document.querySelectorAll("[data-view]").forEach(item=>item.classList.remove("active"));button.classList.add("active");view.goTo(cameras[button.dataset.view],{{duration:1800,easing:"ease-in-out"}});}}));
+}});</script></body></html>"""
