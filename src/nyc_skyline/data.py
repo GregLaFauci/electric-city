@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -61,28 +62,44 @@ def query_params(borough: Borough, limit: int) -> dict[str, str | int]:
     }
 
 
-def fetch_city(limit_per_borough: int = 100, timeout: int = 60) -> dict[str, Any]:
-    """Fetch an equal, deterministic skyline sample from all five boroughs."""
-    features: list[dict[str, Any]] = []
+def context_query_params(borough: Borough, limit: int) -> dict[str, str | int]:
+    """Build a lighter query that adds everyday buildings around the skyline."""
+    params = query_params(borough, limit)
+    params.pop("$order")
+    return params
+
+
+def _fetch(params: dict[str, str | int], timeout: int) -> list[dict[str, Any]]:
     with requests.Session() as session:
         session.headers["User-Agent"] = "electric-boroughs/1.0"
-        for borough in BOROUGHS:
-            response = session.get(
-                API_URL,
-                params=query_params(borough, limit_per_borough),
-                timeout=timeout,
-            )
-            response.raise_for_status()
-            payload = response.json()
-            features.extend(payload.get("features", []))
+        response = session.get(API_URL, params=params, timeout=timeout)
+        response.raise_for_status()
+        return response.json().get("features", [])
+
+
+def fetch_city(
+    limit_per_borough: int = 100,
+    context_per_borough: int = 400,
+    timeout: int = 75,
+) -> dict[str, Any]:
+    """Fetch equal skyline and context samples from all five boroughs."""
+    queries = []
+    for borough in BOROUGHS:
+        queries.append(query_params(borough, limit_per_borough))
+        if context_per_borough:
+            queries.append(context_query_params(borough, context_per_borough))
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        groups = list(pool.map(lambda params: _fetch(params, timeout), queries))
+    features = [feature for group in groups for feature in group]
     return {
         "type": "FeatureCollection",
         "features": features,
         "metadata": {
             "source": DATASET_PAGE,
             "api": API_URL,
-            "sampling": "Tallest buildings per borough, ordered by height then BIN",
+            "sampling": "Tallest buildings plus a context sample from every borough",
             "limit_per_borough": limit_per_borough,
+            "context_per_borough": context_per_borough,
         },
     }
 
@@ -102,6 +119,8 @@ def enrich_features(
             height_feet = max(float(props.get("height_roof") or 0), 8.0)
         except (TypeError, ValueError):
             height_feet = 8.0
+        if height_feet > 2_000:
+            continue
         alpha = min(235, 145 + int(height_feet / 10))
         props.update(
             borough=borough.name,

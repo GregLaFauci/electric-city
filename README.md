@@ -23,11 +23,11 @@ The luminous ground plane is also public data: NYC Planning's current
 [Borough Boundaries][boundaries] release. This keeps the city readable when a
 basemap tile is unavailable and makes the five-borough premise explicit.
 
-The committed showcase is a deterministic sample of the 100 tallest structures
-from each borough—not a claim that those 500 buildings are the entire city.
-The equal sampling is intentional: Staten Island and The Bronx deserve visual
-weight alongside Manhattan. Re-run the pipeline with any sample size, or adapt
-the loader to process all one-million-plus footprints in tiles.
+The committed showcase balances the 100 tallest structures with 400 context
+buildings from each borough—not a claim that those 2,500 records are the entire
+city. The equal sampling is intentional: Staten Island and The Bronx deserve
+visual weight alongside Manhattan. Re-run the pipeline with any sample size,
+or adapt the loader to process all one-million-plus footprints in tiles.
 
 ## Run it
 
@@ -44,7 +44,7 @@ the sidebar.
 ## Rebuild from public data
 
 ```bash
-python scripts/fetch_data.py --per-borough 100
+python scripts/fetch_data.py --per-borough 100 --context-per-borough 400
 python scripts/build_demo.py
 pytest
 ```

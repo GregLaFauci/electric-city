@@ -10,11 +10,12 @@ from nyc_skyline.data import fetch_city, save_geojson
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--per-borough", type=int, default=100)
+    parser.add_argument("--context-per-borough", type=int, default=400)
     parser.add_argument(
         "--output", type=Path, default=Path("data/skyline_sample.geojson")
     )
     args = parser.parse_args()
-    collection = fetch_city(args.per_borough)
+    collection = fetch_city(args.per_borough, args.context_per_borough)
     save_geojson(collection, args.output)
     print(f"Saved {len(collection['features']):,} buildings to {args.output}")
 

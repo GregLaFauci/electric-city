@@ -37,6 +37,13 @@ def test_enrichment_converts_feet_and_adds_identity():
     assert len(props["fill_color"]) == 4
 
 
+def test_enrichment_drops_impossible_height_outliers():
+    result = enrich_features(
+        {"type": "FeatureCollection", "features": [feature("2000001", "2130353")]}
+    )
+    assert result["features"] == []
+
+
 def test_filter_boroughs():
     result = enrich_features(
         {"type": "FeatureCollection", "features": [feature(), feature("3000001")]}

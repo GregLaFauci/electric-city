@@ -11,8 +11,8 @@ from .data import BOROUGHS
 CITY_VIEW = pdk.ViewState(
     latitude=40.706,
     longitude=-73.94,
-    zoom=10.05,
-    pitch=48,
+    zoom=10.45,
+    pitch=44,
     bearing=-19,
 )
 
@@ -61,6 +61,7 @@ def build_deck(
                 filled=True,
                 stroked=True,
                 pickable=False,
+                opacity=0.22,
                 get_fill_color="properties.fill_color",
                 get_line_color="properties.line_color",
                 line_width_min_pixels=1.3,
@@ -94,6 +95,7 @@ def build_deck(
                 get_target_color="target_color",
                 get_width=1.5,
                 width_min_pixels=0.8,
+                opacity=0.55,
             )
         )
 
