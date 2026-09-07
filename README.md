@@ -55,6 +55,7 @@ palette, and writes a serverless PyDeck experience to `docs/` for GitHub Pages.
 - Height: `height_roof` in feet, converted to meters for Deck.gl
 - Validation: records above 2,000 feet are excluded as impossible source anomalies
 - Color: an artistic height classification, not a statistical category
+- One WTC: real footprint and roof record, plus a narrow landmark spire to its 1,776-foot architectural height
 - Original 3D capture: 2014 aerial survey, hybrid CityGML LOD 1/2
 - Footprints: maintained public basemap, updated separately from the historical model
 

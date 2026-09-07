@@ -14,6 +14,18 @@ CITY_VIEW = pdk.ViewState(
     bearing=29,
 )
 
+ONE_WTC = [
+    {
+        "name": "One World Trade Center",
+        "position": [-74.0133, 40.7127],
+        "height": 541.3,
+        "height_feet": 1776,
+        "bin": "1088469",
+        "construction_year": "2009",
+        "color": [255, 181, 71, 255],
+    }
+]
+
 
 def build_deck(
     buildings: Any,
@@ -52,6 +64,22 @@ def build_deck(
             get_fill_color="properties.fill_color",
             get_line_color="properties.line_color",
             line_width_min_pixels=0.35,
+        )
+    )
+    layers.append(
+        pdk.Layer(
+            "ColumnLayer",
+            ONE_WTC,
+            id="one-wtc-spire",
+            pickable=True,
+            auto_highlight=True,
+            disk_resolution=6,
+            radius=6,
+            extruded=True,
+            get_position="position",
+            get_elevation="height",
+            get_fill_color="color",
+            elevation_scale=1,
         )
     )
     return pdk.Deck(
