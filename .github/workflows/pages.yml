@@ -1,4 +1,4 @@
-name: Deploy Electric Boroughs
+name: Deploy Electric City
 
 on:
   push:
@@ -29,4 +29,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
