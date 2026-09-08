@@ -36,7 +36,9 @@ python -m http.server 8765 -d docs
 ```
 
 Open `http://localhost:8765`, orbit the city, select a building, or jump between
-the Skyline, Downtown, Midtown, and Uptown camera presets.
+the Skyline, Downtown, Midtown, and Uptown camera presets. Search the public
+name index to fly directly to one of Manhattan's 717 named buildings, or turn
+on **Show only named buildings** to remove unnamed structures from the scene.
 
 The optional Streamlit studio wraps the same Python-generated scene:
 

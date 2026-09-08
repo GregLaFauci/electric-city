@@ -1,5 +1,6 @@
 from nyc_skyline.render import (
     HEIGHT_CLASSES,
+    NAMED_BUILDINGS_WHERE,
     SCENE_URL,
     STATUE_SCENE_URL,
     TORCH_ELEVATION_METERS,
@@ -59,3 +60,22 @@ def test_scene_loading_uses_guarded_one_shot_reactivity():
     assert "reactiveUtils.whenOnce(()=>!layerView.updating)" in html
     assert 'const loading=document.getElementById("loading");if(!loading)return' in html
     assert 'layerView.watch(' not in html
+
+
+def test_named_building_search_queries_flies_and_inspects():
+    html = build_html()
+    assert 'id="buildingSearch"' in html
+    assert 'id="namedBuildings"' in html
+    assert "const NAMED_WHERE=" in html
+    assert NAMED_BUILDINGS_WHERE in html
+    assert "buildings.queryFeatures(query)" in html
+    assert "buildings.queryExtent({objectIds:[record.id]})" in html
+    assert "jumpToNamedBuilding" in html
+    assert "buildingLayerView?.highlight(record.id)" in html
+
+
+def test_named_only_toggle_filters_scene_layer_view():
+    html = build_html()
+    assert 'id="namedOnly"' in html
+    assert "buildingLayerView.filter=namedOnly.checked?{where:NAMED_WHERE}:null" in html
+    assert "Show only named buildings" in html
