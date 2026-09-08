@@ -51,3 +51,11 @@ def test_building_clicks_use_explicit_hit_test_and_popup():
     assert "buildingLayerView?.highlight(feature)" in html
     for field in ("OBJECTID", "NAME", "HEIGHTROOF", "NUM_FLOORS", "CNSTRCT_YR", "GROUNDELEV"):
         assert field in html
+
+
+def test_scene_loading_uses_guarded_one_shot_reactivity():
+    html = build_html()
+    assert '"esri/core/reactiveUtils"' in html
+    assert "reactiveUtils.whenOnce(()=>!layerView.updating)" in html
+    assert 'const loading=document.getElementById("loading");if(!loading)return' in html
+    assert 'layerView.watch(' not in html
