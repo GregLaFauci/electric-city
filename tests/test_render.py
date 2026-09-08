@@ -40,3 +40,14 @@ def test_height_legend_exposes_ranges_on_hover_and_focus():
         assert f"{label}: {low:,} to {high:,} feet" in html
     assert ".legend-item:hover::after" in html
     assert ".legend-item:focus::after" in html
+
+
+def test_building_clicks_use_explicit_hit_test_and_popup():
+    html = build_html()
+    assert 'popupEnabled:false' in html
+    assert 'view.hitTest(event,{include:[buildings,liberty,torch]})' in html
+    assert 'id="inspector"' in html
+    assert 'showInspector(attrs.NAME||"Manhattan Building"' in html
+    assert "buildingLayerView?.highlight(feature)" in html
+    for field in ("OBJECTID", "NAME", "HEIGHTROOF", "NUM_FLOORS", "CNSTRCT_YR", "GROUNDELEV"):
+        assert field in html
