@@ -12,7 +12,8 @@ catch the orange horizon.
 ## The idea
 
 The mood comes from a 1990s arcade racer at midnight: an endless city ahead,
-sharp neon edges, and Manhattan rising out of the dark. The geometry is not a
+sharp neon edges, Lady Liberty glowing in the harbor, and Manhattan rising out
+of the dark. The geometry is not a
 fantasy approximation. Electric City uses the same public 3D object SceneLayer
 as [Esri's Manhattan Skyscraper Explorer][esri-explorer], derived from NYC's
 [official model][3d-model].
@@ -59,6 +60,7 @@ cannot reproduce the roof geometry visible in the official model.
 ## Data notes
 
 - Live geometry: public `Buildings_Manhattan` I3S SceneLayer
+- Harbor landmark: public georeferenced [Statue of Liberty I3S SceneLayer][statue-layer], with an artistic torch glow
 - Original source: NYC 3-D Building Model, based on the 2014 aerial survey
 - Model detail: hybrid CityGML LOD 1/2 with landmark roof structures
 - Theme field: `HEIGHTROOF`, classified by the Python build configuration
@@ -76,4 +78,5 @@ Python · ArcGIS Maps SDK for JavaScript · I3S SceneLayer · Streamlit · NYC O
 [3d-model]: https://data.cityofnewyork.us/City-Government/3-D-Building-Model/tnru-abg2
 [footprints]: https://data.cityofnewyork.us/d/3g6p-4u5s
 [esri-explorer]: https://esri.github.io/Manhattan-skyscraper-explorer/
+[statue-layer]: https://www.arcgis.com/home/item.html?id=23261d1ff3b84aec933cdbf117ee8648
 [terms]: https://opendata.cityofnewyork.us/overview/#termsofuse
