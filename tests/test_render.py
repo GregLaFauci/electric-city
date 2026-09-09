@@ -1,4 +1,5 @@
 from nyc_skyline.render import (
+    BQE_ROUTE,
     HEIGHT_CLASSES,
     NAMED_BUILDINGS_WHERE,
     SCENE_URL,
@@ -81,3 +82,22 @@ def test_named_only_toggle_filters_scene_layer_view():
     assert 'id="namedOnly"' in html
     assert "buildingLayerView.filter=namedOnly.checked?{where:NAMED_WHERE}:null" in html
     assert "Show only named buildings" in html
+
+
+def test_bqe_drive_reveals_skyline_then_removes_intro_route():
+    html = build_html()
+    assert "BQE NIGHT RUN" in html
+    assert "CITY OF DREAMS" in html
+    assert "BROOKLYN HEIGHTS · SLOW MOTION" in html
+    assert 'id="skipDrive"' in html
+    assert 'id="replayDrive"' in html
+    assert "map.add(introRoad,0)" in html
+    assert "map.remove(introRoad)" in html
+    assert "driveIntro.classList.add(\"to-map\")" in html
+    assert len(BQE_ROUTE) >= 10
+
+
+def test_bqe_drive_respects_reduced_motion():
+    html = build_html()
+    assert 'matchMedia("(prefers-reduced-motion: reduce)")' in html
+    assert "if(reduceMotion)endDriveImmediately()" in html

@@ -7,6 +7,11 @@ a Python-generated synthwave renderer. Low-rise blocks glow cyan, mid-rise
 buildings shift through violet, towers burn magenta, and the tallest landmarks
 catch the orange horizon.
 
+The experience opens with a skippable Queens-bound BQE night run through the
+Atlantic Avenue–Sands Street corridor. The camera slows at the Brooklyn Heights
+skyline reveal, passes the view, and fades into the interactive Manhattan map.
+The temporary neon route is removed as soon as the drive ends.
+
 ![Electric City overview](readme-resources/img/overview.png)
 
 ## The idea
