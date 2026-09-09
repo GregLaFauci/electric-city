@@ -101,3 +101,23 @@ def test_bqe_drive_respects_reduced_motion():
     html = build_html()
     assert 'matchMedia("(prefers-reduced-motion: reduce)")' in html
     assert "if(reduceMotion)endDriveImmediately()" in html
+
+
+def test_idle_mode_cycles_real_sun_without_moving_camera():
+    html = build_html()
+    assert "setTimeout(startOrbit,18000)" in html
+    assert 'view.environment.lighting={type:"sun",date:simulatedTime,directShadowsEnabled:true}' in html
+    assert "view.environment.lighting.date=simulatedTime" in html
+    assert "setInterval(updateOrbit,200)" in html
+    start_orbit = html.split("function startOrbit()", 1)[1].split("function stopOrbit()", 1)[0]
+    assert "view.camera=" not in start_orbit
+
+
+def test_idle_mode_uses_calculated_moon_and_wakes_on_activity():
+    html = build_html()
+    assert "suncalc@2.0.1/+esm" in html
+    assert "getMoonPosition(date,40.758,-73.9855)" in html
+    assert "getMoonIllumination(date)" in html
+    assert 'id="orbitHud"' in html
+    assert '["pointerdown","pointermove","touchstart","wheel","keydown"]' in html
+    assert 'view.environment.lighting={type:"virtual"' in html

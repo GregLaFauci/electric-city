@@ -12,6 +12,13 @@ Atlantic Avenue–Sands Street corridor. The camera slows at the Brooklyn Height
 skyline reveal, passes the view, and fades into the interactive Manhattan map.
 The temporary neon route is removed as soon as the drive ends.
 
+After 18 seconds without input, Electric City preserves the visitor's exact
+viewpoint and enters a continuous NYC day/night time-lapse. ArcGIS sun lighting
+drives the real date-based light, stars, and building shadows; SunCalc positions
+the moon by azimuth, altitude, and phase. One simulated day passes each minute.
+Any pointer, touch, wheel, or keyboard activity returns the scene to its neon
+exploration lighting and starts the idle clock again.
+
 ![Electric City overview](readme-resources/img/overview.png)
 
 ## The idea
@@ -82,8 +89,12 @@ scene-layer service and reference implementation are credited to Esri.
 
 Python · ArcGIS Maps SDK for JavaScript · I3S SceneLayer · Streamlit · NYC Open Data · pytest
 
+Moon position and illumination calculations use [SunCalc][suncalc] under its
+BSD license.
+
 [3d-model]: https://data.cityofnewyork.us/City-Government/3-D-Building-Model/tnru-abg2
 [footprints]: https://data.cityofnewyork.us/d/3g6p-4u5s
 [esri-explorer]: https://esri.github.io/Manhattan-skyscraper-explorer/
 [statue-layer]: https://www.arcgis.com/home/item.html?id=23261d1ff3b84aec933cdbf117ee8648
+[suncalc]: https://github.com/mourner/suncalc
 [terms]: https://opendata.cityofnewyork.us/overview/#termsofuse
