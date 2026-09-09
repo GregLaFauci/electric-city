@@ -65,7 +65,9 @@ def test_scene_loading_uses_guarded_one_shot_reactivity():
 def test_named_building_search_queries_flies_and_inspects():
     html = build_html()
     assert 'id="buildingSearch"' in html
-    assert 'id="namedBuildings"' in html
+    assert 'id="searchResults"' in html
+    assert "bottom:calc(100% + 8px)" in html
+    assert "renderSearchResults" in html
     assert "const NAMED_WHERE=" in html
     assert NAMED_BUILDINGS_WHERE in html
     assert "buildings.queryFeatures(query)" in html
