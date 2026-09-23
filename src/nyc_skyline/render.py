@@ -79,7 +79,16 @@ def build_html() -> str:
         for low, high, label, color in HEIGHT_CLASSES
     )
     return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8" />
+<html lang="en"><head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TDD25WY61L"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+  gtag('config', 'G-TDD25WY61L');
+</script>
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="theme-color" content="#030814" />
 <title>Electric City · City of Dreams</title>
